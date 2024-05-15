@@ -1,0 +1,5 @@
+*.db
+/venv
+.drawio.bkp
+.env
+**/__pycache__
