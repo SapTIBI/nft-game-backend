@@ -26,6 +26,9 @@ class NftAlreadyExistException(Exception):
 class PrizeNotFoundException(Exception):
     pass
 
+class PrizeAlreadyExistException(Exception):
+    pass
+
 class MarketNotFoundException(Exception):
     pass
 
