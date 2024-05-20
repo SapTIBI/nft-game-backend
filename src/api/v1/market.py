@@ -5,6 +5,7 @@ from src.core.schemas.market import MarketCreateSchema, MarketUpdateSchema, Mark
 from src.core.schemas.nft import NftSchema
 from src.core.schemas.params import Paginator
 from src.services.market_service import MarketService
+from src.api.dependencies import markets_service
 
 
 router = APIRouter(
@@ -16,7 +17,7 @@ router = APIRouter(
 @router.post("/", status_code=201)
 def create_market(
    market: MarketCreateSchema,
-   markets_service:  Annotated[MarketService, Depends(MarketService)]):
+   markets_service:  Annotated[MarketService, Depends(markets_service)]):
    try:
       market_id = markets_service.create_market(market)
    except MarketAlreadyExistException:
@@ -27,7 +28,7 @@ def create_market(
 
 @router.get("/", status_code=200, response_model=List[MarketSchema])
 def get_markets(
-   markets_service:  Annotated[MarketService, Depends(MarketService)],
+   markets_service:  Annotated[MarketService, Depends(markets_service)],
    pagination: Paginator = Depends()
 ):
    markets = markets_service.get_markets(pagination)
@@ -37,7 +38,7 @@ def get_markets(
 def update_current_market(
    market_id: int,
    data: MarketUpdateSchema,
-   markets_service:  Annotated[MarketService, Depends(MarketService)]):
+   markets_service:  Annotated[MarketService, Depends(markets_service)]):
    try:
       updated_market = markets_service.update_market(market_id, data)
    except MarketNotFoundException:
@@ -52,7 +53,7 @@ def update_current_market(
 @router.get("/{market_id}/", status_code=200, response_model=MarketSchema)
 def get_current_market(
    market_id: int,
-   markets_service:  Annotated[MarketService, Depends(MarketService)]):
+   markets_service:  Annotated[MarketService, Depends(markets_service)]):
    try:
       market = markets_service.get_market(market_id)
    except MarketNotFoundException:
@@ -64,7 +65,7 @@ def get_current_market(
 @router.delete("/{market_id}/", status_code=204)
 def delete_current_market(
    market_id: int,
-   markets_service:  Annotated[MarketService, Depends(MarketService)]):
+   markets_service:  Annotated[MarketService, Depends(markets_service)]):
    try:
       markets_service.delete_market(market_id)
    except MarketNotFoundException:
@@ -75,7 +76,7 @@ def delete_current_market(
 @router.get("/{market_id}/nfts/", status_code=200, response_model=List[NftSchema])
 def get_nfts_for_current_market(
     market_id: int, 
-    markets_service:  Annotated[MarketService, Depends(MarketService)]):
+    markets_service:  Annotated[MarketService, Depends(markets_service)]):
     try:
         nfts = markets_service.get_nfts_for_market(market_id)
     except MarketNotFoundException:

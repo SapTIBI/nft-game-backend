@@ -6,27 +6,29 @@ from src.core.schemas.prize import PrizeSchema
 from src.core.schemas.nft import NftSchema
 from src.core.schemas.params import Paginator
 from src.services.user_service import UserService
+from src.api.dependencies import users_service
 
 router = APIRouter(
    prefix="/users",
    tags=["User"],
 )
 
-@router.post("/", status_code=201)#UserSchema
+@router.post("/", status_code=201)
 def create_user(
     user: UserCreateSchema,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         user_id = users_service.create_user(user)
     except exceptions.UserAlreadyExistException:
         raise HTTPException(status_code=403, detail="This user already exist")
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail='Server error, unhandle')
     return {'user_id': user_id}
 
 @router.get("/", status_code=200, response_model=List[UserSchema])
 def get_users(
-    users_service:  Annotated[UserService, Depends(UserService)],
+    users_service:  Annotated[UserService, Depends(users_service)],
     pagination: Paginator = Depends()
 ):
     users = users_service.get_users(pagination)
@@ -36,7 +38,7 @@ def get_users(
 def update_current_user(
     user_id: int,
     data: UserUpdateSchema,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         updated_user = users_service.update_user(user_id, data)
     except exceptions.UserNotFoundException:
@@ -51,7 +53,7 @@ def update_current_user(
 @router.get("/{user_id}/", status_code=200, response_model=UserSchema)
 def get_current_user(
     user_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         user = users_service.get_user(user_id)
     except exceptions.UserNotFoundException:
@@ -63,7 +65,7 @@ def get_current_user(
 @router.delete("/{user_id}/", status_code=204)
 def delete_current_user(
     user_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         user = users_service.delete_user(user_id)
     except exceptions.UserNotFoundException:
@@ -75,7 +77,7 @@ def delete_current_user(
 def add_nft_for_current_user(
     user_id: int, 
     nft_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         users_service.add_nft_for_user(user_id, nft_id)
     except exceptions.UserNotFoundException:
@@ -88,7 +90,7 @@ def add_nft_for_current_user(
 @router.get("/{user_id}/nfts/", status_code=200, response_model=List[NftSchema])
 def get_nfts_for_current_user(
     user_id: int, 
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         nfts = users_service.get_nfts_for_user(user_id)
     except exceptions.UserNotFoundException:
@@ -101,7 +103,7 @@ def get_nfts_for_current_user(
 def delete_current_nft_for_current_user(
     user_id: int, 
     nft_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         users_service.delete_nft_for_user(user_id, nft_id)
     except exceptions.UserNotFoundException:
@@ -115,7 +117,7 @@ def delete_current_nft_for_current_user(
 def add_prize_for_current_user(
     user_id: int, 
     prize_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         users_service.add_prize_for_user(user_id, prize_id)
     except exceptions.UserNotFoundException:
@@ -128,7 +130,7 @@ def add_prize_for_current_user(
 @router.get("/{user_id}/prizes/", status_code=200, response_model=List[PrizeSchema])
 def get_prizes_for_current_user(
     user_id: int, 
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         prizes = users_service.get_prizes_for_user(user_id)
     except exceptions.UserNotFoundException:
@@ -141,7 +143,7 @@ def get_prizes_for_current_user(
 def delete_current_prize_for_current_user(
     user_id: int, 
     prize_id: int,
-    users_service:  Annotated[UserService, Depends(UserService)]):
+    users_service:  Annotated[UserService, Depends(users_service)]):
     try:
         users_service.delete_prize_for_user(user_id, prize_id)
     except exceptions.UserNotFoundException:

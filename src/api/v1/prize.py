@@ -4,6 +4,9 @@ from src.core.exceptions import PrizeNotFoundException, PrizeAlreadyExistExcepti
 from src.core.schemas.prize import PrizeCreateSchema, PrizeUpdateSchema, PrizeSchema
 from src.core.schemas.params import Paginator
 from src.services.prize_service import PrizeService
+from src.api.dependencies import prizes_service
+
+
 router = APIRouter(
    prefix="/prizes",
    tags=["Prize"],
@@ -12,7 +15,7 @@ router = APIRouter(
 @router.post("/", status_code=201)
 def create_prize(
    prize: PrizeCreateSchema,
-   prizes_service:  Annotated[PrizeService, Depends(PrizeService)]):
+   prizes_service:  Annotated[PrizeService, Depends(prizes_service)]):
    try:
       prize_id = prizes_service.create_prize(prize)
    except PrizeAlreadyExistException:
@@ -23,7 +26,7 @@ def create_prize(
 
 @router.get("/", status_code=200, response_model=List[PrizeSchema])
 def get_prizes(
-   prizes_service:  Annotated[PrizeService, Depends(PrizeService)],
+   prizes_service:  Annotated[PrizeService, Depends(prizes_service)],
    pagination: Paginator = Depends()
 ):
    prizes = prizes_service.get_prizes(pagination)
@@ -33,7 +36,7 @@ def get_prizes(
 def update_current_prize(
    prize_id: int,
    data: PrizeUpdateSchema,
-   prizes_service:  Annotated[PrizeService, Depends(PrizeService)]):
+   prizes_service:  Annotated[PrizeService, Depends(prizes_service)]):
    try:
       updated_prize = prizes_service.update_prize(prize_id, data)
    except PrizeNotFoundException:
@@ -47,7 +50,7 @@ def update_current_prize(
 @router.get("/{prize_id}/", status_code=200, response_model=PrizeSchema)
 def get_current_prize(
    prize_id: int,
-   prizes_service:  Annotated[PrizeService, Depends(PrizeService)]):
+   prizes_service:  Annotated[PrizeService, Depends(prizes_service)]):
    try:
       prize = prizes_service.get_prize(prize_id)
    except PrizeNotFoundException:
@@ -59,7 +62,7 @@ def get_current_prize(
 @router.delete("/{prize_id}/", status_code=204)
 def delete_current_prize(
    prize_id: int,
-   prizes_service:  Annotated[PrizeService, Depends(PrizeService)]):
+   prizes_service:  Annotated[PrizeService, Depends(prizes_service)]):
    try:
       prizes_service.delete_prize(prize_id)
    except PrizeNotFoundException:

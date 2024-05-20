@@ -4,8 +4,11 @@ from src.repositories.prize import PrizeRepository
 
 
 class PrizeService:
-    def __init__(self):
-        self.prize_repo = PrizeRepository()
+
+    def __init__(
+        self,
+        prize_repo: PrizeRepository):
+        self.prize_repo: PrizeRepository = prize_repo()
 
     def create_prize(self, prize: PrizeCreateSchema):
         prize_dict = prize.model_dump()

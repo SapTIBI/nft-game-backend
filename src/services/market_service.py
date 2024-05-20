@@ -1,12 +1,15 @@
 from src.core.schemas.market import MarketCreateSchema, MarketUpdateSchema
 from src.core.schemas.params import Paginator
 from src.repositories.market import MarketRepository
-from src.repositories.marketnft import MarketNftRepository
+
 
 class MarketService:
-    def __init__(self):
-        self.market_repo = MarketRepository()
-        self.marketnft_repo = MarketNftRepository()
+
+    def __init__(
+        self,
+        market_repo: MarketRepository):
+        self.market_repo: MarketRepository = market_repo()
+
     def create_market(self, market: MarketCreateSchema):
         market_dict = market.model_dump()
         market_id = self.market_repo.create_one(market_dict)
@@ -30,4 +33,4 @@ class MarketService:
         self.market_repo.delete_one(market_id)
 
     def get_nfts_for_market(self, market_id: int):
-        self.marketnft_repo.get_nfts_for_market(market_id)
+        self.market_repo.get_nfts_for_market(market_id)

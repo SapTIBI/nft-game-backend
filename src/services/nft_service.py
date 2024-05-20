@@ -4,8 +4,11 @@ from src.repositories.nft import NftRepository
 
 
 class NftService:
-    def __init__(self):
-        self.nft_repo = NftRepository()
+
+    def __init__(
+        self,
+        nft_repo: NftRepository):
+        self.nft_repo: NftRepository = nft_repo()
 
     def create_nft(self, nft: NftCreateSchema):
         nft_dict = nft.model_dump()

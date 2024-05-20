@@ -1,17 +1,14 @@
-from typing import Optional, List, Annotated
 from src.core.schemas.user import UserCreateSchema, UserUpdateSchema
 from src.core.schemas.params import Paginator
 from src.repositories.user import UserRepository
-from src.repositories.userprize import UserPrizeRepository
-from src.repositories.usernft import UserNftRepository
 
 
 class UserService:
 
-    def __init__(self):
-        self.user_repo = UserRepository()
-        self.userprize_repo = UserPrizeRepository()
-        self.usernft_repo = UserNftRepository()
+    def __init__(
+        self, 
+        user_repo: UserRepository):
+        self.user_repo: UserRepository = user_repo()
 
     def create_user(self, data: UserCreateSchema):
         user_dict = data.model_dump()
@@ -36,19 +33,19 @@ class UserService:
         self.user_repo.delete_one(user_id)
 
     def add_prize_for_user(self, user_id: int, prize_id: int):
-        self.userprize_repo.add_prize_for_user(user_id, prize_id)
+        self.user_repo.add_prize_for_user(user_id, prize_id)
 
     def get_prizes_for_user(self, user_id: int):
-        return self.userprize_repo.get_prizes_for_user(user_id)
+        return self.user_repo.get_prizes_for_user(user_id)
     
     def delete_prize_for_user(self, user_id: int, prize_id: int):
-        self.userprize_repo.delete_prize_for_user(user_id, prize_id)
+        self.user_repo.delete_prize_for_user(user_id, prize_id)
     
     def add_nft_for_user(self, user_id: int, nft_id: int):
-        self.usernft_repo.add_nft_for_user(user_id, nft_id)
+        self.user_repo.add_nft_for_user(user_id, nft_id)
 
     def get_nfts_for_user(self, user_id: int):
-        return self.usernft_repo.get_nfts_for_user(user_id)
+        return self.user_repo.get_nfts_for_user(user_id)
     
     def delete_nft_for_user(self, user_id: int, nft_id: int):
-        self.usernft_repo.delete_nft_for_user(user_id, nft_id)
+        self.user_repo.delete_nft_for_user(user_id, nft_id)
